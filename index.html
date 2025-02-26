@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Result Checker - Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Normal page height */
+            flex-direction: column;
+            color: lime;
+            padding: 20px; /* Added padding for better spacing */
+        }
+
+        .particle-container {
+            width: 90%;
+            height: 200px;
+            background-color: black;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 20px lime;
+            padding: 10px;
+            color: lime;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+
+        .glow-box {
+            width: 90%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 2px solid lime;
+            box-shadow: 0 0 10px lime;
+            text-align: center;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .text-view {
+            font-size: 18px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background-color: lime;
+            color: black;
+            border-radius: 5px;
+            box-shadow: 0 0 10px lime;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .list-view {
+            width: 90%;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid lime;
+            padding: 10px;
+            box-shadow: 0 0 10px lime;
+            border-radius: 5px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 5px;
+            border-bottom: 1px solid lime;
+        }
+
+        .premium-text {
+            font-size: 14px;
+            color: lime;
+            margin-top: 10px;
+        }
+
+        .join-button {
+            margin-top: 20px;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .blinking-cursor {
+            animation: blink 1s infinite;
+        }
+
+        .win-loss-options {
+            display: none;
+            position: absolute;
+            top: 10px; /* Position at the top */
+            left: 10px; /* Loss button on the left */
+            right: 10px; /* Win button on the right */
+            justify-content: space-between;
+        }
+
+        .win-loss-options button {
+            background-color: transparent;
+            border: 2px solid lime;
+            color: lime;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .win-loss-options button#winButton {
+            margin-left: auto; /* Push Win button to the right */
+        }
+
+        .win-loss-options button#lossButton {
+            margin-right: auto; /* Push Loss button to the left */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particle-container" id="hackingAnimation">
+        <span id="hackingText"></span>
+        <span class="blinking-cursor">_</span>
+    </div>
+
+    <div class="glow-box">
+        <div class="win-loss-options" id="winLossOptions">
+            <button id="lossButton">Loss</button>
+            <button id="winButton">Win</button>
+        </div>
+        <div id="textview1" class="text-view">Loading...</div>
+        <div id="textview2" class="text-view">00:00</div>
+        <div id="textview3" class="text-view">Result will appear here</div>
+    </div>
+
+    <div class="buttons">
+        <button id="checkResult">Check Result</button>
+        <button id="history">History</button>
+    </div>
+
+    <div class="list-view">
+        <ul id="resultList"></ul>
+    </div>
+
+    <div class="premium-text">Devloper:- @TradeGenius07</div>
+
+    <div class="join-button">
+        <button onclick="window.location.href='https://t.me/TradeGenius07'">Join Telegram</button>
+    </div>
+
+    <script>
+        let lastResult = "";
+        let currentResult = ""; // Stores the current BIG/SMALL result
+        let hackingText = "";
+
+        // Hacking animation text
+        const hackingLines = [
+            "Initializing system...",
+            "Connecting to server...",
+            "Decrypting data...",
+            "Running algorithms...",
+            "Calculating probabilities...",
+            "Finalizing results..."
+        ];
+
+        let hackingIndex = 0;
+        let hackingCharIndex = 0;
+
+        function updateHackingAnimation() {
+            if (hackingIndex < hackingLines.length) {
+                if (hackingCharIndex < hackingLines[hackingIndex].length) {
+                    hackingText += hackingLines[hackingIndex][hackingCharIndex];
+                    document.getElementById("hackingText").innerText = hackingText;
+                    hackingCharIndex++;
+                } else {
+                    hackingText += "\n";
+                    hackingIndex++;
+                    hackingCharIndex = 0;
+                }
+            } else {
+                hackingText = "";
+                hackingIndex = 0;
+                hackingCharIndex = 0;
+            }
+        }
+
+        setInterval(updateHackingAnimation, 100);
+
+        function generatePeriodNumber() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Kolkata' };
+            const indiaTime = new Date(now.toLocaleString('en-US', options));
+
+            const currentHour = indiaTime.getHours();
+            const currentMinute = indiaTime.getMinutes();
+            const currentSeconds = indiaTime.getSeconds();
+
+            const startHour = 5;
+            const startMinute = 30;
+
+            let elapsedSeconds = (currentHour * 3600 + currentMinute * 60 + currentSeconds) - 
+                                (startHour * 3600 + startMinute * 60);
+
+            if (elapsedSeconds < 0) elapsedSeconds = 0;
+
+            const totalPeriods = Math.floor(elapsedSeconds / 30);
+            const upcomingPeriod = totalPeriods + 1;
+
+            const year = indiaTime.getFullYear();
+            const month = String(indiaTime.getMonth() + 1).padStart(2, '0');
+            const day = String(indiaTime.getDate()).padStart(2, '0');
+            const formattedDate = `${year}${month}${day}`;
+
+            return `100005${String(upcomingPeriod).padStart(4, '0')}`;
+        }
+
+        function getRemainingSeconds() {
+            const now = new Date();
+            return 30 - (now.getSeconds() % 30);
+        }
+
+        function updateTimer() {
+            const periodNumber = generatePeriodNumber();
+            const remainingSeconds = getRemainingSeconds();
+
+            document.getElementById("textview1").innerText = periodNumber;
+            document.getElementById("textview2").innerText = `00:${String(remainingSeconds).padStart(2, '0')}`;
+
+            if (remainingSeconds === 30) {
+                generateResult();
+                showWinLossOptions();
+            }
+        }
+
+        function generateResult() {
+            // Generate BIG or SMALL result
+            currentResult = Math.random() < 0.5 ? "BIG" : "SMALL";
+            document.getElementById("textview3").innerText = currentResult;
+        }
+
+        function showWinLossOptions() {
+            let winLossOptions = document.getElementById("winLossOptions");
+            winLossOptions.style.display = "flex";
+        }
+
+        function hideWinLossOptions() {
+            let winLossOptions = document.getElementById("winLossOptions");
+            winLossOptions.style.display = "none";
+        }
+
+        function addToHistory(resultType) {
+            let resultList = document.getElementById("resultList");
+            let li = document.createElement("li");
+            li.innerText = `${currentResult} - ${resultType}`;
+            if (resultType === "Win") {
+                li.style.color = "lime";
+            } else {
+                li.style.color = "red";
+            }
+            resultList.appendChild(li);
+        }
+
+        document.getElementById("winButton").addEventListener("click", function () {
+            addToHistory("Win");
+            hideWinLossOptions();
+            resetTimer();
+        });
+
+        document.getElementById("lossButton").addEventListener("click", function () {
+            addToHistory("Loss");
+            hideWinLossOptions();
+            resetTimer();
+        });
+
+        function resetTimer() {
+            // Reset the timer and prepare for the next result
+            document.getElementById("textview3").innerText = "Result will appear here";
+            setTimeout(() => {
+                generateResult();
+                showWinLossOptions();
+            }, 1000);
+        }
+
+        setInterval(updateTimer, 1000);
+    </script>
+
+</body>
+</html>
